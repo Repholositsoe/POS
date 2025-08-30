@@ -1,4 +1,5 @@
 import { Welcome } from "@/components/welcome";
+import { BtnLogin } from "@/components/btnLogin";
 
 export default function Home() {
   return (

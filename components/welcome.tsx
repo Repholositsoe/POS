@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
 import { SparklesCore } from "./ui/sparkles";
+import { Button } from "./ui/stateful-button";
 
 export function Welcome() {
   return (
     <div className="h-[40rem] w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
-      <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center text-white relative z-20">
+      <h1 className="md:text-5xl text-2xl lg:text-6xl font-bold text-center text-white relative z-20">
         POINT OF SALES
       </h1>
       <div className="w-[40rem] h-40 relative">
@@ -27,6 +28,12 @@ export function Welcome() {
 
         {/* Radial Gradient to prevent sharp edges */}
         <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
+      </div>
+      <div className="flex flex-row items-center justify-center mt-8 gap-6">
+        <Button className="bg-white text-black hover:ring-white dark:ring-offset-black">
+          Sign up
+        </Button>
+        <Button className="ml-8">Login</Button>
       </div>
     </div>
   );
