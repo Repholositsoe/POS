@@ -30,10 +30,10 @@ export function Welcome() {
         <div className="absolute inset-0 w-full h-full bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
       </div>
       <div className="flex flex-row items-center justify-center mt-8 gap-6">
-       <a href="../app/signup"> <Button className="bg-white text-black hover:ring-white dark:ring-offset-black">
+       <a href="/signup"> <Button className="bg-white text-black hover:ring-white dark:ring-offset-black">
           Sign up
         </Button> </a>
-        <a href="#"><Button className="ml-8">Login</Button></a>
+        <a href="/loginAuth"><Button className="ml-8">Login</Button></a>
       </div>
     </div>
   );
