@@ -23,6 +23,7 @@ import {
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import StatsPopupBar from "./itempop";
+import Products from "./product"; // Import the Products component
 
 // Types for our data
 type Product = {
@@ -69,6 +70,7 @@ export function SidebarDemo() {
   const [showProducts, setShowProducts] = useState(false);
   const [showSales, setShowSales] = useState(false);
   const [showCustomers, setShowCustomers] = useState(false);
+  const [activeView, setActiveView] = useState("dashboard"); // New state for active view
 
   // Example stats (replace with Firebase later)
   const productStats = { available: 120, sold: 45, damaged: 3, returned: 7 };
@@ -79,12 +81,13 @@ export function SidebarDemo() {
     {
       label: "Dashboard",
       href: "#",
+      onClick: () => setActiveView("dashboard"), // Set active view to dashboard
       icon: <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Products",
       href: "#",
-      onClick: () => setShowProducts(true),
+      onClick: () => setActiveView("products"), // Set active view to products
       icon: <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
@@ -102,11 +105,13 @@ export function SidebarDemo() {
     {
       label: "Reports",
       href: "#",
+      onClick: () => setActiveView("reports"), // You can add other views later
       icon: <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Settings",
       href: "#",
+      onClick: () => setActiveView("settings"), // You can add other views later
       icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
@@ -155,7 +160,10 @@ export function SidebarDemo() {
         </SidebarBody>
       </Sidebar>
 
-      <Dashboard />
+      {/* Conditionally render components based on activeView */}
+      {activeView === "dashboard" && <Dashboard />}
+      {activeView === "products" && <Products />}
+      {/* Add other views as needed */}
 
       <StatsPopupBar open={showProducts} onClose={() => setShowProducts(false)} stats={productStats} />
       <StatsPopupBar open={showSales} onClose={() => setShowSales(false)} stats={salesStats} />
@@ -182,7 +190,7 @@ export const Logo = () => {
   );
 };
 
-// Dashboard Component
+// Dashboard Component (keep your existing Dashboard code)
 const Dashboard = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [currentOrders, setCurrentOrders] = useState<Order[]>([
