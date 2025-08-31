@@ -12,60 +12,69 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import StatsPopupBar from "./itempop"; // ✅ import the popup
+
+
+// Simple Logo component (replace with your actual logo if needed)
+function Logo() {
+  return (
+    <div className="flex items-center gap-2 px-4 py-2">
+      <span className="font-bold text-lg text-neutral-800 dark:text-neutral-100">POS</span>
+    </div>
+  );
+}
 
 export function SidebarDemo() {
+  const [open, setOpen] = useState(false);
+  const [showStats, setShowStats] = useState(false); // ✅ track popup state
+
+  // Example stats (replace with Firebase data later)
+  const stats = {
+    available: 120,
+    sold: 45,
+    damaged: 3,
+    returned: 7,
+  };
+
   const links = [
     {
       label: "Dashboard",
       href: "#",
-      icon: (
-        <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconHome className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Products",
       href: "#",
-      icon: (
-        <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      onClick: () => setShowStats(true), // ✅ open popup
+      icon: <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Sales",
       href: "#",
-      icon: (
-        <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Customers",
       href: "#",
-      icon: (
-        <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Reports",
       href: "#",
-      icon: (
-        <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconChartBar className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Settings",
       href: "#",
-      icon: (
-        <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
     {
       label: "Logout",
       href: "#",
-      icon: (
-        <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
-      ),
+      icon: <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
   ];
-  const [open, setOpen] = useState(false);
+
   return (
     <div
       className={cn(
@@ -76,12 +85,12 @@ export function SidebarDemo() {
       <Sidebar open={open} setOpen={setOpen} animate={false}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-            <>
-              <Logo />
-            </>
+            <Logo />
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
-                <SidebarLink key={idx} link={link} />
+                <div key={idx} onClick={link.onClick}>
+                  <SidebarLink link={link} />
+                </div>
               ))}
             </div>
           </div>
@@ -104,55 +113,11 @@ export function SidebarDemo() {
           </div>
         </SidebarBody>
       </Sidebar>
-      <Dashboard />
+
+      
+
+      {/* ✅ Popup appears when Products clicked */}
+      <StatsPopupBar open={showStats} onClose={() => setShowStats(false)} stats={stats} />
     </div>
   );
 }
-export const Logo = () => {
-  return (
-    <a
-      href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
-    >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-      <motion.span
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="font-medium whitespace-pre text-black dark:text-white"
-      >
-        POS System
-      </motion.span>
-    </a>
-  );
-};
-export const LogoIcon = () => {
-  return (
-    <a
-      href="#"
-      className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
-    >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-    </a>
-  );
-};
-
-// Dummy dashboard component with content
-const Dashboard = () => {
-  return (
-    <div className="flex flex-1">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-          Welcome to your POS Dashboard
-        </h2>
-        <div className="flex gap-2 mt-4">
-          {[...new Array(4)].map((i, idx) => (
-            <div
-              key={"first-array-demo-2" + idx}
-              className="h-20 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-neutral-800"
-            ></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};
