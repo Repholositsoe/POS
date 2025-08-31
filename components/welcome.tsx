@@ -33,7 +33,7 @@ export function Welcome() {
        <a href="/signup"> <Button className="bg-white text-black hover:ring-white dark:ring-offset-black">
           Sign up
         </Button> </a>
-        <a href="#"><Button className="ml-8">Login</Button></a>
+        <a href="/loginAuth"><Button className="ml-8">Login</Button></a>
       </div>
     </div>
   );
