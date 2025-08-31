@@ -22,8 +22,9 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import StatsPopupBar from "./itempop";
 import Products from "./product"; // Import the Products component
+import Sales from "./sales";
+import Customers from "./customer";
 
 // Types for our data
 type Product = {
@@ -78,6 +79,8 @@ export function SidebarDemo() {
   const customerStats = { available: 0, sold: 0, damaged: 0, returned: 0 };
 
   const links = [
+
+    
     {
       label: "Dashboard",
       href: "#",
@@ -90,18 +93,18 @@ export function SidebarDemo() {
       onClick: () => setActiveView("products"), // Set active view to products
       icon: <IconBox className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
-    {
-      label: "Sales",
-      href: "#",
-      onClick: () => setShowSales(true),
-      icon: <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+     {
+  label: "Sales",
+  href: "#",
+  onClick: () => setActiveView("sales"),
+  icon: <IconShoppingCart className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
     },
-    {
-      label: "Customers",
-      href: "#",
-      onClick: () => setShowCustomers(true),
-      icon: <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
-    },
+   {
+  label: "Customers",
+  href: "#",
+  onClick: () => setActiveView("customers"),
+  icon: <IconUsers className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />,
+},
     {
       label: "Reports",
       href: "#",
@@ -163,11 +166,10 @@ export function SidebarDemo() {
       {/* Conditionally render components based on activeView */}
       {activeView === "dashboard" && <Dashboard />}
       {activeView === "products" && <Products />}
-      {/* Add other views as needed */}
+        {activeView === "sales" && <Sales />}
+        {activeView === "customers" && <Customers />}
 
-      <StatsPopupBar open={showProducts} onClose={() => setShowProducts(false)} stats={productStats} />
-      <StatsPopupBar open={showSales} onClose={() => setShowSales(false)} stats={salesStats} />
-      <StatsPopupBar open={showCustomers} onClose={() => setShowCustomers(false)} stats={customerStats} />
+      
     </div>
   );
 }
