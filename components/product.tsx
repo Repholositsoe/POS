@@ -10,46 +10,47 @@ import {
   IconCategory,
   IconCurrencyZloty,
 } from "@tabler/icons-react";
-
-// Types for our product data
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  stock: number;
-  description?: string;
-};
-
-// Sample Lesotho-specific products
-const LESOTHO_PRODUCTS: Product[] = [
-  { id: 1, name: "Pap en Vleis", price: 65.00, category: "Main Dish", stock: 42, description: "Traditional maize meal with meat" },
-  { id: 2, name: "Moroho", price: 25.00, category: "Side Dish", stock: 38, description: "Cooked leafy vegetables" },
-  { id: 3, name: "Motoho", price: 35.00, category: "Beverage", stock: 56, description: "Fermented porridge" },
-  { id: 4, name: "Sesotho Hat", price: 120.00, category: "Souvenir", stock: 22, description: "Traditional Basotho hat" },
-  { id: 5, name: "Blanket", price: 350.00, category: "Souvenir", stock: 15, description: "Traditional Basotho blanket" },
-  { id: 6, name: "Mala", price: 45.00, category: "Snack", stock: 30, description: "Grilled meat" },
-  { id: 7, name: "Lesotho Beer", price: 55.00, category: "Beverage", stock: 40, description: "Traditional sorghum beer" },
-  { id: 8, name: "Maize Meal", price: 75.00, category: "Staple", stock: 60, description: "Fine maize meal" },
-];
+import { productService } from '@/services/firebaseService';
+import { Product } from '@/types';
 
 const CATEGORIES = ["Main Dish", "Side Dish", "Beverage", "Souvenir", "Snack", "Staple"];
 
 const Products = () => {
-  const [products, setProducts] = useState<Product[]>(LESOTHO_PRODUCTS);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(LESOTHO_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState<Omit<Product, "id">>({
+  const [newProduct, setNewProduct] = useState<Omit<Product, "id" | "createdAt" | "updatedAt">>({
     name: "",
     price: 0,
     category: "",
     stock: 0,
     description: ""
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Load products from Firebase
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const productsData = await productService.getAllProducts();
+        setProducts(productsData);
+        setFilteredProducts(productsData);
+      } catch (error) {
+        console.error('Error loading products:', error);
+        setError('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
 
   // Filter products based on search term and category
   useEffect(() => {
@@ -69,20 +70,31 @@ const Products = () => {
     setFilteredProducts(result);
   }, [searchTerm, selectedCategory, products]);
 
-  const handleAddProduct = () => {
+  const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.category || newProduct.price <= 0) {
       alert("Please fill in all required fields");
       return;
     }
     
-    const productToAdd: Product = {
-      ...newProduct,
-      id: Math.max(...products.map(p => p.id), 0) + 1
-    };
-    
-    setProducts([...products, productToAdd]);
-    setNewProduct({ name: "", price: 0, category: "", stock: 0, description: "" });
-    setIsAdding(false);
+    try {
+      const productId = await productService.createProduct(newProduct);
+      
+      // Add the new product to local state
+      const productToAdd: Product = {
+        ...newProduct,
+        id: productId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      
+      setProducts([...products, productToAdd]);
+      setNewProduct({ name: "", price: 0, category: "", stock: 0, description: "" });
+      setIsAdding(false);
+      alert('Product added successfully!');
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Failed to add product');
+    }
   };
 
   const handleEditProduct = (product: Product) => {
@@ -90,21 +102,39 @@ const Products = () => {
     setIsEditing(true);
   };
 
-  const handleUpdateProduct = () => {
+  const handleUpdateProduct = async () => {
     if (!currentProduct) return;
     
-    setProducts(products.map(product => 
-      product.id === currentProduct.id ? currentProduct : product
-    ));
-    
-    setIsEditing(false);
-    setCurrentProduct(null);
+    try {
+      await productService.updateProduct(currentProduct.id, currentProduct);
+      
+      // Update the product in local state
+      setProducts(products.map(product => 
+        product.id === currentProduct.id ? currentProduct : product
+      ));
+      
+      setIsEditing(false);
+      setCurrentProduct(null);
+      alert('Product updated successfully!');
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product');
+    }
   };
 
-  const handleDeleteProduct = (id: number) => {
+  const handleDeleteProduct = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this product?")) return;
     
-    setProducts(products.filter(product => product.id !== id));
+    try {
+      await productService.deleteProduct(id);
+      
+      // Remove the product from local state
+      setProducts(products.filter(product => product.id !== id));
+      alert('Product deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product');
+    }
   };
 
   const resetForm = () => {
@@ -113,6 +143,34 @@ const Products = () => {
     setCurrentProduct(null);
     setNewProduct({ name: "", price: 0, category: "", stock: 0, description: "" });
   };
+
+  if (loading) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 bg-gray-50 min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-600 text-2xl mb-4">⚠️</div>
+          <p className="text-gray-800 text-lg mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -313,7 +371,7 @@ const Products = () => {
           ))}
         </div>
 
-        {filteredProducts.length === 0 && (
+        {filteredProducts.length === 0 && !loading && (
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <p className="text-gray-500 text-lg">No products found. Try a different search or add a new product.</p>
           </div>
