@@ -1,6 +1,10 @@
 "use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function LoginEnter() {
+    const router = useRouter();
+
     return (
         <main className="w-full h-screen flex flex-col items-center justify-center px-4">
             <div className="max-w-sm w-full text-gray-600 space-y-5">
@@ -11,7 +15,10 @@ export function LoginEnter() {
                     </div>
                 </div>
                 <form
-                    onSubmit={(e) => e.preventDefault()}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        router.push("/sidebar");
+                    }}
                     className="space-y-5"
                 >
                     <div>
@@ -47,6 +54,7 @@ export function LoginEnter() {
                         <a href="javascript:void(0)" className="text-center text-indigo-600 hover:text-indigo-500">Forgot password?</a>
                     </div>
                     <button
+                        type="submit"
                         className="w-full px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
                     >
                         Sign in
