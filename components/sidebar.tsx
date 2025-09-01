@@ -167,7 +167,7 @@ export function SidebarDemo() {
       {activeView === "dashboard" && <Dashboard />}
       {activeView === "products" && <Products />}
         {activeView === "sales" && <Sales />}
-        {activeView === "customers" && <Customers />}
+        
 
       
     </div>
